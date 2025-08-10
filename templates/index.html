@@ -1,21 +1,17 @@
+<!DOCTYPE html>
 <html>
 <head>
-    <title>Flask HTML + API Test</title>
+    <title>Store in S3</title>
 </head>
 <body>
-    <h1>Flask HTML Page</h1>
-    <button onclick="fetchData()">Get API Data</button>
-    <p id="result"></p>
-
-    <script>
-        function fetchData() {
-            fetch('/api/data')
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('result').innerText = JSON.stringify(data);
-                })
-                .catch(error => console.error(error));
-        }
-    </script>
+    <h2>Enter Your Details</h2>
+    <form method="POST">
+        Name: <input type="text" name="name" required><br><br>
+        Age: <input type="number" name="age" required><br><br>
+        <button type="submit">Submit</button>
+    </form>
+    {% if message %}
+    <p style="color: green;">{{ message }}</p>
+    {% endif %}
 </body>
 </html>
