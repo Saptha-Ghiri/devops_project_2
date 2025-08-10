@@ -1,4 +1,4 @@
-name: Auto Deploy Flask to EC2
+name: Deploy Flask App to EC2
 
 on:
   push:
@@ -8,17 +8,30 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - name: SSH to EC2 and update code
-        uses: appleboy/ssh-action@v0.1.10
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ubuntu
-          key: ${{ secrets.EC2_KEY }}
-          script: |
-            cd /home/ubuntu/devops_project_2
-            git reset --hard
-            git pull origin main
-            source /home/ubuntu/venv/bin/activate
-            pkill -f app.py || true
-            nohup python3 app.py > flask.log 2>&1 &
+    - name: Checkout repo
+      uses: actions/checkout@v3
+
+    - name: Set up SSH
+      uses: webfactory/ssh-agent@v0.9.0
+      with:
+        ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
+
+    - name: Deploy to EC2
+      run: |
+        ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
+          cd /home/ubuntu/devops_project_2
+
+          # Pull latest code
+          git pull origin main
+
+          # Activate virtual environment
+          source /home/ubuntu/venv/bin/activate
+
+          # Stop old Flask process if running
+          pkill -f app.py || true
+
+          # Start Flask in background and log output
+          nohup python3 app.py > flask.log 2>&1 &
+        EOF
