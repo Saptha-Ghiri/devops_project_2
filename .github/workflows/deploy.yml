@@ -1,0 +1,24 @@
+name: Auto Deploy Flask to EC2
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: SSH to EC2 and update code
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_KEY }}
+          script: |
+            cd /home/ubuntu/devops_project_2
+            git reset --hard
+            git pull origin main
+            source /home/ubuntu/venv/bin/activate
+            pkill -f app.py || true
+            nohup python3 app.py > flask.log 2>&1 &
