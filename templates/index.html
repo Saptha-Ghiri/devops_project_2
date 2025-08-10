@@ -1,0 +1,21 @@
+<html>
+<head>
+    <title>Flask HTML + API Test</title>
+</head>
+<body>
+    <h1>Flask HTML Page</h1>
+    <button onclick="fetchData()">Get API Data</button>
+    <p id="result"></p>
+
+    <script>
+        function fetchData() {
+            fetch('/api/data')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('result').innerText = JSON.stringify(data);
+                })
+                .catch(error => console.error(error));
+        }
+    </script>
+</body>
+</html>
